@@ -1,9 +1,10 @@
 from mysql.connector import Error
 from Database.dbconn import create_server_connection
-connection = create_server_connection()
+from Database.authentication import check_hash, hash_password
 
-
-def create_new_user(username, password_hash):
+def create_new_user(username, password):
+    connection = create_server_connection()
+    password_hash = hash_password(password)
     query = f"INSERT INTO Users (username, password) VALUES ('{username}','{password_hash}');"
     cursor = connection.cursor()
 
@@ -12,11 +13,15 @@ def create_new_user(username, password_hash):
         connection.commit()
         print(f"Consulta realizada correctamente: {cursor.rowcount}")
         connection.close()
+        print("New user created")
     except Error as err:
         print(f"Error: {err}")
 
-def check_user(username,password_hash):
-    query = F"SELECT * FROM Users WHERE PASSWORD = '{password_hash}' AND USERNAME = '{username}'"
+
+def check_credentials(username,password):
+    connection = create_server_connection()
+    query = F"SELECT * FROM Users WHERE USERNAME = '{username}'"
+
     cursor = connection.cursor()
     result = None
     try:
@@ -28,13 +33,16 @@ def check_user(username,password_hash):
         print(f"Error: {err}")
 
     if result:
-        print(result)
-        return True
+        if check_hash(password, result[0][1]):
+            print("The password matches")
+            return True
     else:
+        print("The password is wrong")
         return False
 
-def delete_user(password_hash):
-    query = f"DELETE FROM Users WHERE password = '{password_hash}'"
+def delete_user(username):
+    connection = create_server_connection()
+    query = f"DELETE FROM Users WHERE USERNAME = '{username}'"
     cursor = connection.cursor()
 
     try:
@@ -44,8 +52,9 @@ def delete_user(password_hash):
     except Error as err:
         print(f"Error: {err}")
 
-def check_user_exists(email):
-    query = F"SELECT * FROM Users WHERE USERNAME = '{email}'"
+def check_user_exists(username):
+    connection = create_server_connection()
+    query = F"SELECT * FROM Users WHERE USERNAME = '{username}'"
     cursor = connection.cursor()
     result = None
     try:
@@ -57,9 +66,8 @@ def check_user_exists(email):
         print(f"Error: {err}")
 
     if result:
-        print(f"There is already a user with the email of {email}")
+        print(f"There is already a user with the username of {username}")
         return True
     else:
-        print(f"There is no username with the email of {email}")
+        print(f"There is no username with the username of {username}")
         return False
-
