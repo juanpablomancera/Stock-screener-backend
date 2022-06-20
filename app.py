@@ -30,12 +30,10 @@ def register_user():
     password = req_data["password"]
     user_exists = check_user_exists(email)
     if user_exists:
-        print("user exists")
         return jsonify({"msg": "User already exists"})
     else:
         create_new_user(email, password)
         acces_token = create_access_token(identity=email)
-        print("we're creating a token for" +email+": "+ acces_token)
         return jsonify({"msg":acces_token})
 
 

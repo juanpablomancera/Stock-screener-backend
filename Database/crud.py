@@ -11,9 +11,8 @@ def create_new_user(username, password):
     try:
         cursor.execute(query)
         connection.commit()
-        print(f"Consulta realizada correctamente: {cursor.rowcount}")
+        print(f"The query was succesful: {cursor.rowcount}")
         connection.close()
-        print("New user created")
     except Error as err:
         print(f"Error: {err}")
 
@@ -27,17 +26,15 @@ def check_credentials(username,password):
     try:
         cursor.execute(query)
         result = cursor.fetchall()
-        print(f"Consulta realizada: {cursor.rowcount}")
+        print(f"The query was made: {cursor.rowcount}")
         connection.close()
     except Error as err:
         print(f"Error: {err}")
 
     if result:
         if check_hash(password, result[0][1]):
-            print("The password matches")
             return True
     else:
-        print("The password is wrong")
         return False
 
 def delete_user(username):
@@ -48,7 +45,7 @@ def delete_user(username):
     try:
         cursor.execute(query)
         connection.commit()
-        print(f"Consultas correctamente realizadas: {cursor.rowcount}")
+        print(f"The query was succesful: {cursor.rowcount}")
     except Error as err:
         print(f"Error: {err}")
 
@@ -60,14 +57,12 @@ def check_user_exists(username):
     try:
         cursor.execute(query)
         result = cursor.fetchall()
-        print(f"Consulta realizada: {cursor.rowcount}")
+        print(f"Query was made: {cursor.rowcount}")
         connection.close()
     except Error as err:
         print(f"Error: {err}")
 
     if result:
-        print(f"There is already a user with the username of {username}")
         return True
     else:
-        print(f"There is no username with the username of {username}")
         return False
