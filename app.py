@@ -1,10 +1,13 @@
 from flask import Flask, request, jsonify, current_app
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required
+
+from screener.crypto_filters.filters import price_above_sma, volume_spike, volatility_expansion, orderbook_imbalance, \
+    tight_spread
 from screener.screener import results
 import os
 from dotenv import load_dotenv
-from Database.crud import create_new_user, check_credentials, delete_user, check_user_exists
+from database.crud import create_new_user, check_credentials, delete_user, check_user_exists
 load_dotenv()
 
 app = Flask(__name__)
@@ -50,6 +53,49 @@ def login():
         return jsonify(acces_token=acces_token)
     else:
         return jsonify({"msg":"User not found"})
+
+CRYPTO_FILTERS = {
+        "trend": price_above_sma,
+        "volume": volume_spike,
+        "volatility": volatility_expansion,
+        "orderbook": orderbook_imbalance,
+        "spread": tight_spread
+    }
+
+@app.route("/crypto/screener", methods=["POST"])
+@jwt_required()
+def crypto_screener():
+    """
+    Expected JSON:
+    {
+        "symbol": "BTC/USD",
+        "filters": ["trend", "volume", "spread"]
+    }
+    """
+    req_data = request.get_json()
+    symbol = req_data.get("symbol")
+    filters = req_data.get("filters", [])
+
+    if not symbol:
+        return jsonify({"error": "symbol is required"}), 400
+
+    results = {}
+
+    for f in filters:
+        if f not in CRYPTO_FILTERS:
+            results[f] = "unknown filter"
+            continue
+
+        try:
+            results[f] = CRYPTO_FILTERS[f](symbol)
+        except Exception as e:
+            results[f] = f"error: {str(e)}"
+
+    return jsonify({
+        "symbol": symbol,
+        "results": results
+    })
+
 
 
 if __name__ == "__main__":

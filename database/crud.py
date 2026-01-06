@@ -1,6 +1,6 @@
 from mysql.connector import Error
-from Database.dbconn import create_server_connection
-from Database.authentication import check_hash, hash_password
+from database.dbconn import create_server_connection
+from database.authentication import check_hash, hash_password
 
 def create_new_user(username, password):
     connection = create_server_connection()

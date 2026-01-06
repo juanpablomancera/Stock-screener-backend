@@ -1,4 +1,4 @@
-from screener.gettickers.getSP500 import getSP500
+from screener.get_tickers.getSP500 import getSP500
 
 def filterStocks(filters):
     filteredStocks = getSP500()
