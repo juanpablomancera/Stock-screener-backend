@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 def create_server_connection():
@@ -11,10 +12,13 @@ def create_server_connection():
             host="localhost",
             user="StockScreenerManager",
             password= os.getenv("PASSWORD"),
-            database="Stockscreener"
+            database="Stockscreener",
+            auth_plugin="mysql_native_password"
+
         )
         print("MySQL Dtabase connection succesful")
 
     except Error as err:
         print(f"Error: {err}")
+
     return connection

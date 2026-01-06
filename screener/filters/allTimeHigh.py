@@ -20,6 +20,4 @@ def allTimeHigh(distanceToHigh, allSymbols):
         except:
             print(f"Data from {symbol} not found")
 
-
-
     return filteredSymbols

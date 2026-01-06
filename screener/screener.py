@@ -32,5 +32,3 @@ def results(data):
     return results
 
 
-
-
