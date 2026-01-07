@@ -1,4 +1,4 @@
-def checkFilters(filters):
+def check_filters(filters):
     newFilters = {}
     for function, value in filters.items():
         if value:

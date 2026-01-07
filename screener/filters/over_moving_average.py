@@ -2,26 +2,22 @@ import yfinance as yf
 import datetime as dt
 from pandas_datareader import data as pdr
 
-
-def weeksHigh(distanceToHigh, allSymbols):
+def over_moving_average(smaValue, allSymbols):
     yf.pdr_override()
     filteredSymbols = []
-    start = dt.datetime.now() - dt.timedelta(weeks=52)
+    smaString = "Sma_"+str(smaValue)
+    start = dt.datetime.now() - dt.timedelta(days=300)
     now = dt.datetime.now()
     for symbol in allSymbols:
         try:
-            df = pdr.get_data_yahoo(symbol, start, now)
+            df = pdr.get_data_yahoo(symbol,start,now)
+            df[smaString] = df.iloc[:,4].rolling(window=smaValue).mean()
+            sma = list(df[smaString])[-1]
             stockPrice = list(df["Adj Close"])[-1]
-            high = df["High"].max()
-            actualDistance = ((high - stockPrice) / stockPrice) * 100
-            if actualDistance < distanceToHigh:
+            if stockPrice > sma:
                 filteredSymbols.append(symbol)
-
         except:
             print(f"Data from {symbol} not found")
 
-
-
     return filteredSymbols
-
 

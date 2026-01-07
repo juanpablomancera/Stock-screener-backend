@@ -1,6 +1,6 @@
 import yahoo_fin.stock_info as si
 
-def pastQuartersEarningsIncrease(rate, allSymbols):
+def past_quarters_earnings_increase(rate, allSymbols):
     filteredSymbols = []
 
     for symbol in allSymbols:

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, current_app
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required
 
@@ -8,6 +8,7 @@ from screener.screener import results
 import os
 from dotenv import load_dotenv
 from database.crud import create_new_user, check_credentials, delete_user, check_user_exists
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -36,8 +37,8 @@ def register_user():
         return jsonify({"msg": "User already exists"})
     else:
         create_new_user(email, password)
-        acces_token = create_access_token(identity=email)
-        return jsonify({"msg":acces_token})
+        access_token = create_access_token(identity=email)
+        return jsonify({"msg":access_token})
 
 
 
@@ -49,8 +50,8 @@ def login():
     password = req_data["password"]
     user = check_credentials(email, password)
     if user:
-        acces_token = create_access_token(identity=email)
-        return jsonify(acces_token=acces_token)
+        access_token = create_access_token(identity=email)
+        return jsonify(acces_token=access_token)
     else:
         return jsonify({"msg":"User not found"})
 
@@ -89,7 +90,7 @@ def crypto_screener():
         try:
             results[f] = CRYPTO_FILTERS[f](symbol)
         except Exception as e:
-            results[f] = f"error: {str(e)}"
+            results[f] = f"Could not fetch the data"
 
     return jsonify({
         "symbol": symbol,
